@@ -26,3 +26,18 @@ def my_func_set_like_containment_1_1():
 
 
 print(my_func_set_like_containment_1_1())
+
+
+def my_func_set_like_containment_1_2():
+    my_output_list = []
+    my_search_list = A
+    for my_b_elem in B:
+        if my_b_elem in my_search_list:
+            my_output_list.append(my_b_elem)
+            # print(A.index(my_b_elem))
+            my_search_list = my_search_list[A.index(my_b_elem):]
+            # print(my_search_list)
+    if my_output_list == B:
+        return 'YES', my_output_list
+    else:
+        return 'NO', my_output_list
