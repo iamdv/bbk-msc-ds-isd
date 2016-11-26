@@ -41,3 +41,17 @@ def my_func_set_like_containment_1_2():
         return 'YES', my_output_list
     else:
         return 'NO', my_output_list
+
+
+def my_func_consecutive_containment_1_3():
+    my_aList_len = len(A)
+    my_bList_len = len(B)
+    for x in range(0, my_aList_len):
+        try:
+            if(A[x: x + my_bList_len] == B):
+                return 'YES'
+        except IndexError:
+            return 'NO'
+    return 'NO'
+
+print(my_func_consecutive_containment_1_3())
