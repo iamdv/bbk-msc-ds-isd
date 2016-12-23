@@ -1,5 +1,7 @@
+#Please run the program directly. There is a print statement for each function.
+
 student=['adam','john','james','alice','sarah']
-module=['accounting','maths','geography','english','computers']
+module=['accounting','maths','geography','english']
 mark=[[90,-1,70,85],[-1,90,50,60],[40,70,-1,60],[75,80,60,70],[80,60,50,-1]]
 
 
@@ -45,12 +47,30 @@ def my_func_student_report_2_5(my_table):
     return student_average
 
 
+def my_func_module_report_2_6(my_table):
+    module_average = []
+    for each_module_name in module:
+        module_average.append([each_module_name, my_func_avg_module_marks_2_4(my_table, each_module_name)])
+        module_average = sorted(module_average, key=lambda x: x[1], reverse=True)
+    return module_average
 
+
+####################################################################################
 print('2.1: Row Average: ', my_func_avg_table_row_2_1(mark, 4))
+# First parameter table name and second parameter row number
+
 print('2.2: Column Average: ', my_func_avg_table_column_2_2(mark, 3))
+# First parameter table name and second parameter column number
+
 print('2.3: Student Search: ', my_func_avg_student_marks_2_3(mark, 'test'))
+# Correct student names: ['adam','john','james','alice','sarah']
+
 print('2.4: Module Search: ', my_func_avg_module_marks_2_4(mark, 'accounting'))
-print('2.4: Student Report: ', my_func_student_report_2_5(mark))
+# Correct module names: ['accounting','maths','geography','english']
 
+print('2.5: Student Report: ', my_func_student_report_2_5(mark))
+# Displays student report as table (list of list) in descending order
 
-
+print('2.6: Module Report: ', my_func_module_report_2_6(mark))
+# Displays module report as table (list of list) in descending order
+####################################################################################
