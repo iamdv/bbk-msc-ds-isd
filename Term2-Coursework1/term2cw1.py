@@ -6,22 +6,25 @@ def isWordCharacter(ch) :
       return (ch >= "A" and ch <= "Z" or ch >= "a" and ch <= "z") 
 
 
-def countFullLineComments(filename) :
+def getFullLineComments(filename) :
+   myLineCounter = 0
    myFile = open(filename, 'r')
-   myLine = myFile.readline()
-   myOutput = 0
-   myListChecker = []
-   while myLine :
-      if(myLine.find('#') >= 0) :
-         myString = list(myLine[0:myLine.index('#') + 1])
-         print(myString)
-
-      myLine = myFile.readline()
+   myOutputDictionary = {}
+   for myLine in myFile :
+      myLineCounter = myLineCounter + 1
+      if (myLine.find('#') >= 0) :
+         if (myLine.lstrip()[0] == '#') :
+            myOutputDictionary[myLineCounter] = myLine.strip()
    myFile.close()
-   return myOutput
+   return myOutputDictionary
+
+print(getFullLineComments('pythoncode.py'))
+
+def countFullLineComments(filename) :
+   return len(getFullLineComments(filename))
 
 
-# print(countFullLineComments('pythoncode.py'))
+print(countFullLineComments('pythoncode.py'))
 
 
 
@@ -72,8 +75,6 @@ def getWord(s):
 def RobustSpellCheck(filenamePy,filenameWords):
    #To Complete
    return()
-
-
 
 
 def ExtractComment(s):
