@@ -1,30 +1,47 @@
+import os as os
+
+
 def isWordCharacter(ch) :
   
       return (ch >= "A" and ch <= "Z" or ch >= "a" and ch <= "z") 
-  
+
 
 def countFullLineComments(filename) :
-   myEachLine = ''
-   myHashCounter = 0
-   
-   # Open the file and extract only lines with comments ('#')
-   # Get the len 
    myFile = open(filename, 'r')
-   for myLine in myFile:
-      if(myLine.find('#') >= 0) :         
-         if (myLine.lstrip()[0] == '#') :
-            myHashCounter = myHashCounter + 1
-   myFile.close()
-   return myHashCounter
+   myLine = myFile.readline()
+   myOutput = 0
+   myListChecker = []
+   while myLine :
+      if(myLine.find('#') >= 0) :
+         myString = list(myLine[0:myLine.index('#') + 1])
+         print(myString)
 
-print(countFullLineComments('pythoncode.py'))
+      myLine = myFile.readline()
+   myFile.close()
+   return myOutput
+
+
+# print(countFullLineComments('pythoncode.py'))
+
+
 
 def readInRealWords(filename):
-   #To Complete
-   return()
+   myInputFile = open(filename, 'r')
+   myLoopCounter = 0
+   myOutputSet = set()
+   myCurrentLine = myInputFile.readline()
+
+   while myCurrentLine != '':
+      myLoopCounter = myLoopCounter + 1
+      myOutputSet.add(myCurrentLine[7 + len(str(myLoopCounter)) : ].strip().lower())
+      myCurrentLine = myInputFile.readline()
+
+   return myOutputSet
+
+
+print(len(readInRealWords('linenumberwords.txt')))
 
 def spellCheckComments(filename,correctlySpelledWords) :
-   #To Complete
    return()
 
       
