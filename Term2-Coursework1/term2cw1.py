@@ -36,19 +36,37 @@ def readInRealWords(filename):
       myOutputSet.add(myCurrentLine[7 + len(str(myLoopCounter)) : ].strip().lower())
       myCurrentLine = myInputFile.readline()
 
+   myInputFile.close()
    return myOutputSet
-
 
 print(len(readInRealWords('linenumberwords.txt')))
 
 def spellCheckComments(filename,correctlySpelledWords) :
+   correctlySpelledWords = readInRealWords(filename)
+
+
    return()
 
       
 def getWord(s):
-   #To Complete
-   return()
-      
+   myInputString = str(s).rstrip()
+   myStringIndexList = []
+   myLoopCounter = 0
+
+   for myChar in myInputString :
+      myLoopCounter = myLoopCounter + 1
+      if(isWordCharacter(myChar)) :
+         myStringIndexList.append(myLoopCounter)
+
+   if len(myStringIndexList) == 0 :
+      return ' '
+   else :
+      return myInputString[ min(myStringIndexList) - 1 : max(myStringIndexList) ]
+
+# print(getWord(" !,Word’s** "))
+# print(getWord(" !,Word’** "))
+# print(getWord(" !,’** "))
+# print(getWord(" !,’** dog'"" \\'''"))
    
 
 def RobustSpellCheck(filenamePy,filenameWords):
