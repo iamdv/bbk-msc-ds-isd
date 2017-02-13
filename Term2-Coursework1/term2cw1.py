@@ -72,25 +72,27 @@ def getWord(s):
 def convertLineToWordHelper(inputDictionary, outputFormat) :
    myOutputSet = set()
    myValueKeyPair = {}
+   myLowerUpperWordsDict = {}
 
    for myKey, myValue in inputDictionary.items():
       for eachWord in myValue.split():
          myOutputSet.add(getWord(eachWord).lower())
          myValueKeyPair[getWord(eachWord).lower()] = myKey
+         myLowerUpperWordsDict[getWord(eachWord)] = getWord(eachWord)
 
    myOutputSet.remove(' ')
 
    if outputFormat == 'set' :
       return myOutputSet
-   elif outputFormat == 'dict' :
+   elif outputFormat == 'valueKey' :
       return myValueKeyPair
+   elif outputFormat == 'lowerUpper' :
+      return myLowerUpperWordsDict
 #================================================================
 
 #================================================================
 def spellCheckComments(filename,correctlySpelledWords) :
-   # readInRealWords() function is created as part of question 3 and
-   # it returns set of correctly spelled words
-   myCorrectlySpelledWordSet = readInRealWords(correctlySpelledWords)
+   myCorrectlySpelledWordSet = correctlySpelledWords
 
    # getFullLineComments is a helper function which returns only commented
    # lines front the code
@@ -105,9 +107,9 @@ def spellCheckComments(filename,correctlySpelledWords) :
 
    # convertLineToWordHelper() function returns a dictionary where words are keys
    # and the line numbers of the words are the Values
-   myValueKeyPairDict = convertLineToWordHelper(myCommentWordsDictionary, 'dict')
+   myValueKeyPairDict = convertLineToWordHelper(myCommentWordsDictionary, 'valueKey')
+   # myLowerUpperWords = convertLineToWordHelper(myCommentWordsDictionary, 'lowerUpper')
 
-   # Removing empty set element
    myOutput = {}
 
    # Looping through each incorrect word and also checking if the
@@ -115,13 +117,15 @@ def spellCheckComments(filename,correctlySpelledWords) :
    # If the key (line number) exists then we append the value to the existing list
    # If the key (line number) doesn't exist then we create a dictionary element
    for eachWord in myIncorrectWords :
-      if(myValueKeyPairDict[eachWord] in myOutput) :
-         myOutput[myValueKeyPairDict[eachWord]].append(eachWord)
+      print(eachWord)
+      print(type(eachWord))
+      if(myValueKeyPairDict[(eachWord)] in myOutput) :
+         myOutput[myValueKeyPairDict[eachWord]].append([myValueKeyPairDict[eachWord]])
       else :
          myOutput[myValueKeyPairDict[eachWord]] = [eachWord]
 
-   return myOutput
-# print(spellCheckComments('pythoncode.py', 'linenumberwords.txt'))
+   return  myOutput
+# print(spellCheckComments('pythoncode.py', readInRealWords('linenumberwords.txt')))
 #================================================================
 
 
@@ -133,9 +137,24 @@ def RobustSpellCheck(filenamePy,filenameWords):
 
 
 def ExtractComment(s):
-   #To Complete
-   return()
-     
+
+   myInputString = s
+   myTotalIterations = round(myInputString.count('"') / 2)
+
+   for eachIteration in range(1, myTotalIterations + 1, 1) :
+      # print(eachIteration)
+      # print(myTotalIterations)
+
+      myInputSubStringStartPos = myInputString.find('"')
+      myInputSubStringEndPos = myInputString.find('"', myInputString.find('"') + 1 ) + 1
+      myInputStringLen = len(myInputString[myInputSubStringStartPos : myInputSubStringEndPos])
+      # print(myInputSubStringStartPos, myInputSubStringEndPos, myInputStringLen)
+      myInputString = myInputString.replace(myInputString[myInputSubStringStartPos : myInputSubStringEndPos] , '|' * myInputStringLen, 1)
+
+   return s [myInputString.find('#') : ]
+
+print(ExtractComment(' outf.write("/# " + str(number) + " #/ " + line) #lots of hash(#) symbols heres'))
+
 def ExtractCommentAdvanced(s):
    #To Complete
    return()
