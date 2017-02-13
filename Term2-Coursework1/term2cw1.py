@@ -136,26 +136,37 @@ def RobustSpellCheck(filenamePy,filenameWords):
    return()
 
 
-def ExtractComment(s):
-
-   myInputString = s
-   myTotalIterations = round(myInputString.count('"') / 2)
+def getCommentsHelper(inputString, quoteType) :
+   myInputString = inputString
+   myQuoteType = quoteType
+   myTotalIterations = int(myInputString.count(myQuoteType) / 2)
 
    for eachIteration in range(1, myTotalIterations + 1, 1) :
-      # print(eachIteration)
-      # print(myTotalIterations)
-
-      myInputSubStringStartPos = myInputString.find('"')
-      myInputSubStringEndPos = myInputString.find('"', myInputString.find('"') + 1 ) + 1
+      myInputSubStringStartPos = myInputString.find(myQuoteType)
+      myInputSubStringEndPos = myInputString.find(myQuoteType, myInputString.find(myQuoteType) + 1 ) + 1
       myInputStringLen = len(myInputString[myInputSubStringStartPos : myInputSubStringEndPos])
-      # print(myInputSubStringStartPos, myInputSubStringEndPos, myInputStringLen)
       myInputString = myInputString.replace(myInputString[myInputSubStringStartPos : myInputSubStringEndPos] , '|' * myInputStringLen, 1)
+      
+   if(myInputString.count('#') == 0) :
+      return ''
+   else :
+      return inputString[myInputString.find('#') : ]
 
-   return s [myInputString.find('#') : ]
+def ExtractComment(s):
+   return getCommentsHelper(s, '"')
 
-print(ExtractComment(' outf.write("/# " + str(number) + " #/ " + line) #lots of hash(#) symbols heres'))
+def ExtractCommentAdvanced(s):   
+   if(s.count('"')) > 0 :
+      myOutputString = getCommentsHelper(s, '"')
+   elif(s.count("'")) > 0 :
+      myOutputString = getCommentsHelper(s, "'")
+   elif(s.count('"') + s.count("'")) == 0 and s.count('#') > 0 :
+      return s
+   elif(s.count('"') + s.count("'")) == 0 and s.count('#') == 0 :
+      return ''   
+   return myOutputString
 
-def ExtractCommentAdvanced(s):
-   #To Complete
-   return()
-
+# print(ExtractCommentAdvanced('         outf.write("/# " + str(number) + " #/ " + line) #lots of hash(#) symbols here'))
+# print(ExtractCommentAdvanced("         outf.write('/# ' + str(number) + ' #/ ' + line) #lots of hash(#) symbols here"))
+# print(ExtractCommentAdvanced("#lots of hash(#) symbols here"))
+# print(ExtractCommentAdvanced('         outf.write(str(number) + line'))
