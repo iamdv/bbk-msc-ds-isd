@@ -11,6 +11,29 @@ def generate_algorithm_plugins(input_file_name):
             output_list.append(each_line)
     return output_list
 
+def load_input_data(file_name):
+    return np.genfromtxt(file_name, delimiter= ',')
+
+
+def generate_map_button_click():
+    my_UK_data = load_input_data('MainlandUKoutline.csv')
+
+    my_long = list(my_UK_data[:, 1])
+    my_lat = list(my_UK_data[:, 2])
+
+    my_lat_min = min(my_lat)
+    my_lat_max = max(my_lat)
+    my_long_min = min(my_long)
+    my_long_max = max(my_long)
+    my_converted_list = []
+
+    for my_index in range(0, len(my_lat)):
+        my_converted_list.append((my_long[my_index] - my_long_min) * (400 / (my_long_max - my_long_min)) + 50)
+        my_converted_list.append((400 - (my_lat[my_index] - my_lat_min) * (400 / (my_lat_max - my_lat_min))) + 50)
+
+    # canvas.create_polygon([50, 150, 150, 50, 250, 150, 150, 250],   outline ="black", fill = "green")
+    canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
+
 
 my_frame = Frame(root)
 my_frame.grid()
@@ -25,33 +48,13 @@ my_entry_box = Entry(bd=1, width = 6)
 my_listbox_items = generate_algorithm_plugins('plugins.txt')
 my_listbox = Listbox(root, height=len(my_listbox_items) + 1)
 
-my_button = Button(text = "Process" )
+my_button = Button(text = "Process", command = generate_map_button_click)
 
 my_list_value = 1
 for list_item in my_listbox_items:
     my_listbox.insert(my_list_value, list_item)
     my_list_value = my_list_value + 1
 
-
-
-my_UK_data = np.genfromtxt('MainlandUKoutline.csv', delimiter= ',')
-
-my_long = (list(my_UK_data[:,1]))
-my_lat = (list(my_UK_data[:,2]))
-
-my_lat_min = min(my_lat)
-my_lat_max = max(my_lat)
-my_long_min = min(my_long)
-my_long_max = max(my_long)
-
-# print(my_lat_min, my_lat_max)
-# print(my_long_min, my_long_max)
-
-my_converted_list = []
-
-for my_index in range(0, len(my_lat)):
-    my_converted_list.append((my_long[my_index] - my_long_min) * (400 / (my_long_max - my_long_min)) + 50)
-    my_converted_list.append((400 - (my_lat[my_index] - my_lat_min) * (400 / (my_lat_max - my_lat_min))) + 50)
 
 
 
@@ -83,14 +86,9 @@ my_button.grid(row=0, column = 4)
 canvas.grid(row = 1, column = 1, columnspan = 5)
 
 # canvas.create_rectangle( 25, 25, 375, 375, fill="purple", width=0)
-
-# canvas.create_polygon([50, 150, 150, 50, 250, 150, 150, 250],   outline ="black", fill = "green")
-canvas.create_polygon(my_converted_list,   outline ="black", fill = "red")
-
-# print(min(my_converted_list), max(my_converted_list))
-
-
 root.mainloop()
+
+
 
 # Use inheritence and allow users to import new simplification algorithm
 # Use the point class to store the data. Someone might load the Z value
