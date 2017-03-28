@@ -40,11 +40,15 @@ def open_menu_file_loader():
 my_frame = Frame(root)
 my_frame.grid()
 
-my_menu = Menu(root)
-my_file_menu = Menu(my_menu, tearoff= 0)
-my_file_menu.add_command(label = "Open", command = open_menu_file_loader)
-my_file_menu.add_command(label = "Save", command = open_menu_file_loader)
-root.config(menu = my_menu)
+my_menubar = Menu(root)
+my_file_menu = Menu(my_menubar, tearoff=0)
+my_file_menu.add_command(label="Open", command=open_menu_file_loader)
+my_file_menu.add_command(label="Save", command=open_menu_file_loader)
+my_file_menu.add_command(label="Close", command=open_menu_file_loader)
+
+my_file_menu.add_command(label="Exit", command=root.quit)
+my_menubar.add_cascade(label="File", menu=my_file_menu)
+root.config(menu=my_menubar)
 
 
 my_dynamic_label_name = StringVar()
