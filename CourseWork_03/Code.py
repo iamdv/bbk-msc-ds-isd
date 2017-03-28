@@ -34,9 +34,18 @@ def generate_map_button_click():
     # canvas.create_polygon([50, 150, 150, 50, 250, 150, 150, 250],   outline ="black", fill = "green")
     canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
 
+def open_menu_file_loader():
+    print('test')
 
 my_frame = Frame(root)
 my_frame.grid()
+
+my_menu = Menu(root)
+my_file_menu = Menu(my_menu, tearoff= 0)
+my_file_menu.add_command(label = "Open", command = open_menu_file_loader)
+my_file_menu.add_command(label = "Save", command = open_menu_file_loader)
+root.config(menu = my_menu)
+
 
 my_dynamic_label_name = StringVar()
 my_dynamic_label_name.set('Select a list item')
@@ -84,6 +93,7 @@ my_label_02.grid(row = 0, column = 2, padx=10)
 my_entry_box.grid(row = 0, column = 3)
 my_button.grid(row=0, column = 4)
 canvas.grid(row = 1, column = 1, columnspan = 5)
+
 
 # canvas.create_rectangle( 25, 25, 375, 375, fill="purple", width=0)
 root.mainloop()
