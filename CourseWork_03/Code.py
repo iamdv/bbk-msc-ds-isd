@@ -1,8 +1,57 @@
-import numpy as np,random as rand
+import math, numpy as np,random as rand
 from tkinter import *
-root = Tk()
-canvas = Canvas(root, width = 500, height = 500)
+np.set_printoptions(precision=15)
 
+root = Tk()
+canvas = Canvas(root, width=500, height=500)
+
+
+# ------------------------------------------------------------------------------
+# Function to calculate the nth Plot algorithm
+# ------------------------------------------------------------------------------
+def nthPlot(data,n):
+    count = 0
+    newdata = []
+    for i in range(len(data)):
+        if i % n == 0:
+            count = count + 1
+            temp = [count, float(data[i][1]), float(data[i][2])]
+            newdata.append(temp)
+    return newdata
+#------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# Function to calculate the Distance algorithm
+#------------------------------------------------------------------------------
+def Distance(data, mindist):
+    count = 1
+    newdata = []
+    lastKept = float(data[0][1]), float(data[0][2])
+    temp = [count, float(data[0][1]), float(data[0][2])]
+    newdata.append(temp)
+    for i in range(1, len(data)):
+        current = float(data[i][1]), float(data[i][2])
+        if EucledeanDistance(lastKept, current) >= mindist:
+            count = count + 1
+            temp = [count, float(data[i][1]), float(data[i][2])]
+            lastKept = float(data[i][1]), float(data[i][2])
+            newdata.append(temp)
+    return newdata
+#------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# Function to calculate the EucledeanDistance algorithm
+#------------------------------------------------------------------------------
+def EucledeanDistance(lastKept, current):
+    return math.sqrt(math.pow((current[0] - lastKept[0]), 2) + math.pow((current[1] - lastKept[1]), 2))
+#------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# This functions reads the plugins.txt file and lists all the algorithms available
+#------------------------------------------------------------------------------
 def generate_algorithm_plugins(input_file_name):
     output_list = []
     with open(input_file_name) as current_file:
@@ -10,16 +59,26 @@ def generate_algorithm_plugins(input_file_name):
         for each_line in current_file:
             output_list.append(each_line)
     return output_list
+#------------------------------------------------------------------------------
 
+
+# ------------------------------------------------------------------------------
+# This function loads the input data and retuns a numpy Array
+#------------------------------------------------------------------------------
 def load_input_data(file_name):
-    return np.genfromtxt(file_name, delimiter= ',')
+    return np.genfromtxt(file_name, delimiter=',')
+#------------------------------------------------------------------------------
 
-
+# ------------------------------------------------------------------------------
+# This is a callback function which triggers the button click event
+#------------------------------------------------------------------------------
 def generate_map_button_click():
-    my_UK_data = load_input_data('MainlandUKoutline.csv')
+    my_data = np.array(Distance(load_input_data('MainlandUKoutline.csv'), 0.1))
+    print(len(my_data))
+    print(my_data[:10])
 
-    my_long = list(my_UK_data[:, 1])
-    my_lat = list(my_UK_data[:, 2])
+    my_long = list(my_data[:, 1])
+    my_lat = list(my_data[:, 2])
 
     my_lat_min = min(my_lat)
     my_lat_max = max(my_lat)
@@ -33,9 +92,42 @@ def generate_map_button_click():
 
     # canvas.create_polygon([50, 150, 150, 50, 250, 150, 150, 250],   outline ="black", fill = "green")
     canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
+#------------------------------------------------------------------------------
 
+# ------------------------------------------------------------------------------
+# Test function to make sure file menu events are triggers. To be replaced!
+#------------------------------------------------------------------------------
 def open_menu_file_loader():
     print('test')
+#------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# This function generates the label text based on the list item selected
+#------------------------------------------------------------------------------
+def get_label_text(my_selected_listbox_value):
+    # print(my_selected_listbox_value)
+    if my_selected_listbox_value == 'Distance':
+        my_dynamic_label_name.set('min distance')
+    elif my_selected_listbox_value == 'nthPoint':
+        my_dynamic_label_name.set('n = ')
+    else:
+        my_dynamic_label_name.set('Select a list item')
+#------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# This function captures the list item selection change event
+#------------------------------------------------------------------------------
+def get_listbox_selection(listbox_event):
+    my_widget = listbox_event.widget
+    index = int(my_widget.curselection()[0])
+    value = my_widget.get(index).rstrip('\r\n')
+    get_label_text(value)
+    # print(value)
+    return value
+#------------------------------------------------------------------------------
+
 
 my_frame = Frame(root)
 my_frame.grid()
@@ -49,7 +141,6 @@ my_file_menu.add_command(label="Close", command=open_menu_file_loader)
 my_file_menu.add_command(label="Exit", command=root.quit)
 my_menubar.add_cascade(label="File", menu=my_file_menu)
 root.config(menu=my_menubar)
-
 
 my_dynamic_label_name = StringVar()
 my_dynamic_label_name.set('Select a list item')
@@ -69,26 +160,6 @@ for list_item in my_listbox_items:
     my_list_value = my_list_value + 1
 
 
-
-
-def get_label_text(my_selected_listbox_value):
-    # print(my_selected_listbox_value)
-    if my_selected_listbox_value == 'Distance':
-        my_dynamic_label_name.set('min distance')
-    elif my_selected_listbox_value == 'nthPoint':
-        my_dynamic_label_name.set('n = ')
-    else:
-        my_dynamic_label_name.set('Select a list item')
-
-
-def get_listbox_selection(listbox_event):
-    my_widget = listbox_event.widget
-    index = int(my_widget.curselection()[0])
-    value = my_widget.get(index).rstrip('\r\n')
-    get_label_text(value)
-    # print(value)
-    return value
-
 my_listbox.bind('<<ListboxSelect>>', get_listbox_selection)
 
 my_label_01.grid(row = 0, column = 0)
@@ -97,7 +168,6 @@ my_label_02.grid(row = 0, column = 2, padx=10)
 my_entry_box.grid(row = 0, column = 3)
 my_button.grid(row=0, column = 4)
 canvas.grid(row = 1, column = 1, columnspan = 5)
-
 
 # canvas.create_rectangle( 25, 25, 375, 375, fill="purple", width=0)
 root.mainloop()
@@ -113,9 +183,3 @@ root.mainloop()
 # 400 - x or 400 - y
 # Lock the window size
 # Main file is linesimplificationq
-
-# mbar and file menu
-
-
-
-# print(generate_algorithm_plugins('plugins.txt'))
