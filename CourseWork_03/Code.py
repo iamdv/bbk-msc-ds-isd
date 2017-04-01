@@ -1,10 +1,15 @@
 import math, numpy as np,random as rand
 from tkinter import *
+from tkinter import messagebox
+from tkinter.filedialog import askopenfilename
+
+
 np.set_printoptions(precision=15)
+
+my_main_input_file = ''
 
 root = Tk()
 canvas = Canvas(root, width=500, height=500)
-
 
 # ------------------------------------------------------------------------------
 # Function to calculate the nth Plot algorithm
@@ -69,36 +74,15 @@ def load_input_data(file_name):
     return np.genfromtxt(file_name, delimiter=',')
 #------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------
-# This is a callback function which triggers the button click event
-#------------------------------------------------------------------------------
-def generate_map_button_click():
-    my_data = np.array(Distance(load_input_data('MainlandUKoutline.csv'), 0.1))
-    print(len(my_data))
-    print(my_data[:10])
-
-    my_long = list(my_data[:, 1])
-    my_lat = list(my_data[:, 2])
-
-    my_lat_min = min(my_lat)
-    my_lat_max = max(my_lat)
-    my_long_min = min(my_long)
-    my_long_max = max(my_long)
-    my_converted_list = []
-
-    for my_index in range(0, len(my_lat)):
-        my_converted_list.append((my_long[my_index] - my_long_min) * (400 / (my_long_max - my_long_min)) + 50)
-        my_converted_list.append((400 - (my_lat[my_index] - my_lat_min) * (400 / (my_lat_max - my_lat_min))) + 50)
-
-    # canvas.create_polygon([50, 150, 150, 50, 250, 150, 150, 250],   outline ="black", fill = "green")
-    canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
-#------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
 # Test function to make sure file menu events are triggers. To be replaced!
 #------------------------------------------------------------------------------
 def open_menu_file_loader():
-    print('test')
+    # print('test')
+    my_main_input_file = (askopenfilename().split('/')[-1])
+    print(my_main_input_file)
+    return my_main_input_file
 #------------------------------------------------------------------------------
 
 
@@ -124,8 +108,51 @@ def get_listbox_selection(listbox_event):
     index = int(my_widget.curselection()[0])
     value = my_widget.get(index).rstrip('\r\n')
     get_label_text(value)
+    my_entry_box.delete(0, END)
     # print(value)
     return value
+#------------------------------------------------------------------------------
+
+
+# ------------------------------------------------------------------------------
+# This is a callback function which triggers the button click event
+#------------------------------------------------------------------------------
+def generate_map_button_click():
+
+    try:
+        my_current_list_selection =  my_listbox.get(my_listbox.curselection()).rstrip('\r\n')
+    except Exception as e:
+       messagebox.showinfo("Alert!", "Please select a algorithm")
+       return None
+
+    my_input_box_value = float(my_entry_box.get())
+
+    if my_current_list_selection == 'Distance':       
+        my_data = np.array(Distance(load_input_data('MainlandUKoutline.csv'), my_input_box_value))
+        # print(len(my_data))
+        # print(my_data[:10])
+    elif my_current_list_selection == 'nthPoint':
+        my_data = np.array(nthPlot(load_input_data('MainlandUKoutline.csv'), my_input_box_value))
+        # print(len(my_data))
+        # print(my_data[:10])
+     
+
+    my_long = list(my_data[:, 1])
+    my_lat = list(my_data[:, 2])
+
+    my_lat_min = min(my_lat)
+    my_lat_max = max(my_lat)
+    my_long_min = min(my_long)
+    my_long_max = max(my_long)
+    my_converted_list = []
+
+    for my_index in range(0, len(my_lat)):
+        my_converted_list.append((my_long[my_index] - my_long_min) * (400 / (my_long_max - my_long_min)) + 50)
+        my_converted_list.append((400 - (my_lat[my_index] - my_lat_min) * (400 / (my_lat_max - my_lat_min))) + 50)
+
+    # canvas.create_polygon([50, 150, 150, 50, 250, 150, 150, 250],   outline ="black", fill = "green")
+    canvas.delete("all")
+    canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
 #------------------------------------------------------------------------------
 
 
@@ -164,14 +191,13 @@ my_listbox.bind('<<ListboxSelect>>', get_listbox_selection)
 
 my_label_01.grid(row = 0, column = 0)
 my_listbox.grid(row = 0,column = 1, padx=10)
-my_label_02.grid(row = 0, column = 2, padx=10)
+my_label_02.grid(row=0, column=2, padx=5, sticky=E)
+root.grid_columnconfigure(2, minsize=125)
 my_entry_box.grid(row = 0, column = 3)
 my_button.grid(row=0, column = 4)
 canvas.grid(row = 1, column = 1, columnspan = 5)
 
-# canvas.create_rectangle( 25, 25, 375, 375, fill="purple", width=0)
 root.mainloop()
-
 
 
 # Use inheritence and allow users to import new simplification algorithm
