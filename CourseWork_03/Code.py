@@ -4,9 +4,8 @@ from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 
 
-np.set_printoptions(precision=15)
 
-my_main_input_file = ''
+np.set_printoptions(precision=15)
 
 root = Tk()
 canvas = Canvas(root, width=500, height=500)
@@ -79,9 +78,11 @@ def load_input_data(file_name):
 # Test function to make sure file menu events are triggers. To be replaced!
 #------------------------------------------------------------------------------
 def open_menu_file_loader():
+    my_file = open('temp_file_name.txt', 'w')
     # print('test')
     my_main_input_file = (askopenfilename().split('/')[-1])
-    print(my_main_input_file)
+    my_file.write(my_main_input_file)
+    my_file.close()
     return my_main_input_file
 #------------------------------------------------------------------------------
 
@@ -119,6 +120,10 @@ def get_listbox_selection(listbox_event):
 #------------------------------------------------------------------------------
 def generate_map_button_click():
 
+    with open('temp_file_name.txt', 'r') as my_file:
+        my_file_to_load = my_file.readline()
+
+    print(my_file_to_load)
     try:
         my_current_list_selection =  my_listbox.get(my_listbox.curselection()).rstrip('\r\n')
     except Exception as e:
@@ -128,11 +133,11 @@ def generate_map_button_click():
     my_input_box_value = float(my_entry_box.get())
 
     if my_current_list_selection == 'Distance':       
-        my_data = np.array(Distance(load_input_data('MainlandUKoutline.csv'), my_input_box_value))
+        my_data = np.array(Distance(load_input_data(my_file_to_load), my_input_box_value))
         # print(len(my_data))
         # print(my_data[:10])
     elif my_current_list_selection == 'nthPoint':
-        my_data = np.array(nthPlot(load_input_data('MainlandUKoutline.csv'), my_input_box_value))
+        my_data = np.array(nthPlot(load_input_data(my_file_to_load), my_input_box_value))
         # print(len(my_data))
         # print(my_data[:10])
      
