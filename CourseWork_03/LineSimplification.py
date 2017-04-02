@@ -1,5 +1,5 @@
 from tkinter import Frame, Canvas, Menu, Entry, Listbox, Button, Label, StringVar
-import numpy as np, math, os
+import numpy as np, math, os, csv
 
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename, asksaveasfilename
@@ -9,6 +9,7 @@ from Pt import Pt
 
 from Distance import Distance
 from nthPoint import nthPoint
+
 
 class LineSimplification(Frame):
 
@@ -134,7 +135,10 @@ class LineSimplification(Frame):
 		    	pt_data.append(Pt(float(data[i][1]), float(data[i][2])))
 
 		    my_data = generate_plugin_thinpoints(my_listbox.get(my_listbox.curselection()), pt_data, my_input_entry_value)
-
+		    global my_output_to_save
+		    my_output_to_save = []
+		    for my_line_index in range(len(my_data)):
+		    	my_output_to_save.append((str(my_line_index+1), my_data[my_line_index].getX(), my_data[my_line_index].getY()))
 		    my_long = []
 		    my_lat = []
 
@@ -165,6 +169,23 @@ class LineSimplification(Frame):
 		#------------------------------------------------------------------------------
 
 
+		# ------------------------------------------------------------------------------
+		# This is a callback function which saves the file
+		#------------------------------------------------------------------------------
+		def file_save():
+			# print(my_output_to_save)
+			item_length = len(my_output_to_save[0])
+			filename = asksaveasfilename(title="Please select data file to save")
+			if (len(filename) > 0):
+				print("You chose ", filename)
+			with open(filename, 'wb') as out:
+				csv_out = csv.writer(out)
+				for i in range(len(my_output_to_save)):
+					csv_out.writerow([x[i] for x in my_output_to_save])
+			# filenameToSave = "myDataFile.csv"
+
+		# ------------------------------------------------------------------------------
+
 		my_class_instance = nthPoint()
 		my_input_data = load_input_data('MainlandUKOutline.csv')
 
@@ -174,7 +195,7 @@ class LineSimplification(Frame):
 		my_menubar = Menu(self.master)
 		my_file_menu = Menu(my_menubar, tearoff=0)
 		my_file_menu.add_command(label="Open", command=open_menu_file_loader)
-		my_file_menu.add_command(label="Save", command=open_menu_file_loader)
+		my_file_menu.add_command(label="Save", command=file_save)
 		my_file_menu.add_command(label="Close", command=open_menu_file_loader)
 
 		my_file_menu.add_command(label="Exit", command=self.master.quit)
