@@ -1,12 +1,11 @@
 from tkinter import Frame, Canvas, Menu, Entry, Listbox, Button, Label, StringVar
-import numpy as np, math
+import numpy as np, math, os
 
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 
 from GUIconnection import GUIconnection
 from Pt import Pt
-
 
 from Distance import Distance
 from nthPoint import nthPoint
@@ -17,7 +16,8 @@ class LineSimplification(Frame):
 
 
 		# ------------------------------------------------------------------------------
-		# This functions reads the plugins.txt file and lists all the algorithms available
+		# Following three functions uses POLYMORPHISM and generates displayName, displayParameterName
+		# and thinPoints based on the input (Plugins.txt or Listbox selection). 
 		#------------------------------------------------------------------------------
 		def generate_plugin_names(input_file_name):
 			output_list = []
@@ -52,8 +52,57 @@ class LineSimplification(Frame):
 		    value = my_widget.get(index).rstrip('\r\n')
 		    my_dynamic_label_name.set(generate_plugin_label(value))
 		    # my_entry_box.delete(0, END)
-		    # print(value)
 		    return value
+		#------------------------------------------------------------------------------
+
+
+		# ------------------------------------------------------------------------------
+		# This is a callback function which triggers the button click event
+		#------------------------------------------------------------------------------
+		def generate_open_map():
+			try:
+				with open('temp_file_name.txt', 'r') as my_file:
+					my_file_to_load = my_file.readline()
+			except Exception:
+				messagebox.showinfo("Alert!", "Please load a file")
+				return None
+
+			try:
+				my_data = np.array(load_input_data(my_file_to_load))
+			except Exception:
+				messagebox.showinfo("Alert!", "Please select appropriate file")
+				return None
+
+			my_long = list(my_data[:, 1])
+			my_lat = list(my_data[:, 2])
+
+			my_lat_min = min(my_lat)
+			my_lat_max = max(my_lat)
+			my_long_min = min(my_long)
+			my_long_max = max(my_long)
+
+			my_converted_list = []
+
+			for my_index in range(0, len(my_lat)):
+				my_converted_list.append((my_long[my_index] - my_long_min) * (400 / (my_long_max - my_long_min)) + 50)
+				my_converted_list.append((400 - (my_lat[my_index] - my_lat_min) * (400 / (my_lat_max - my_lat_min))) + 50)
+
+			canvas.delete("all")
+			canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
+		#------------------------------------------------------------------------------
+
+
+		# ------------------------------------------------------------------------------
+		# Test function to make sure file menu events are triggers. To be replaced!
+		#------------------------------------------------------------------------------
+		def open_menu_file_loader():
+		    my_file = open('temp_file_name.txt', 'w')
+		    # print('test')
+		    my_main_input_file = (askopenfilename().split('/')[-1])
+		    my_file.write(my_main_input_file)
+		    my_file.close()
+		    generate_open_map()
+		    return my_main_input_file
 		#------------------------------------------------------------------------------
 
 
@@ -115,16 +164,22 @@ class LineSimplification(Frame):
 		    canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
 		#------------------------------------------------------------------------------
 
+
 		my_class_instance = nthPoint()
 		my_input_data = load_input_data('MainlandUKOutline.csv')
-
-		my_output_list  = my_class_instance.thinPoints(my_input_data, 1000)
-		print(len(my_output_list))
-
 
 		Frame.__init__(self, master)
 		# self.grid()
 
+		my_menubar = Menu(self.master)
+		my_file_menu = Menu(my_menubar, tearoff=0)
+		my_file_menu.add_command(label="Open", command=open_menu_file_loader)
+		my_file_menu.add_command(label="Save", command=open_menu_file_loader)
+		my_file_menu.add_command(label="Close", command=open_menu_file_loader)
+
+		my_file_menu.add_command(label="Exit", command=self.master.quit)
+		my_menubar.add_cascade(label="File", menu=my_file_menu)
+		self.master.config(menu=my_menubar)
 
 		canvas = Canvas(self.master, width=500, height=500)
 		self.grid(row=0, column = 4)
@@ -160,5 +215,11 @@ class LineSimplification(Frame):
 		self.master.title("Line Simplification")
 
 
+
 if __name__ == "__main__":
 	LineSimplification().mainloop()
+
+try:
+	os.remove('temp_file_name.txt')
+except OSError:
+	pass
