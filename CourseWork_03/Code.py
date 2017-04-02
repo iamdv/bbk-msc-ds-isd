@@ -2,9 +2,6 @@ import math, numpy as np,random as rand
 from tkinter import *
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
-
-
-
 np.set_printoptions(precision=15)
 
 root = Tk()
@@ -83,6 +80,7 @@ def open_menu_file_loader():
     my_main_input_file = (askopenfilename().split('/')[-1])
     my_file.write(my_main_input_file)
     my_file.close()
+    generate_open_map()
     return my_main_input_file
 #------------------------------------------------------------------------------
 
@@ -118,12 +116,41 @@ def get_listbox_selection(listbox_event):
 # ------------------------------------------------------------------------------
 # This is a callback function which triggers the button click event
 #------------------------------------------------------------------------------
+def generate_open_map():
+    with open('temp_file_name.txt', 'r') as my_file:
+        my_file_to_load = my_file.readline()
+
+    my_data = np.array(load_input_data(my_file_to_load))
+     
+    my_long = list(my_data[:, 1])
+    my_lat = list(my_data[:, 2])
+
+    my_lat_min = min(my_lat)
+    my_lat_max = max(my_lat)
+    my_long_min = min(my_long)
+    my_long_max = max(my_long)
+
+    # print(my_lat, my_long)
+    my_converted_list = []
+
+    for my_index in range(0, len(my_lat)):
+        my_converted_list.append((my_long[my_index] - my_long_min) * (400 / (my_long_max - my_long_min)) + 50)
+        my_converted_list.append((400 - (my_lat[my_index] - my_lat_min) * (400 / (my_lat_max - my_lat_min))) + 50)
+
+    # canvas.create_polygon([50, 150, 150, 50, 250, 150, 150, 250],   outline ="black", fill = "green")
+    canvas.delete("all")
+    canvas.create_polygon(my_converted_list, outline ="black", fill = "red")
+#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# This is a callback function which triggers the button click event
+#------------------------------------------------------------------------------
 def generate_map_button_click():
 
     with open('temp_file_name.txt', 'r') as my_file:
         my_file_to_load = my_file.readline()
 
-    print(my_file_to_load)
+    # print(my_file_to_load)
     try:
         my_current_list_selection =  my_listbox.get(my_listbox.curselection()).rstrip('\r\n')
     except Exception as e:
@@ -140,6 +167,8 @@ def generate_map_button_click():
         my_data = np.array(nthPlot(load_input_data(my_file_to_load), my_input_box_value))
         # print(len(my_data))
         # print(my_data[:10])
+    else:
+        my_data = np.array(nthPlot(load_input_data(my_file_to_load), my_input_box_value))
      
 
     my_long = list(my_data[:, 1])
@@ -149,6 +178,7 @@ def generate_map_button_click():
     my_lat_max = max(my_lat)
     my_long_min = min(my_long)
     my_long_max = max(my_long)
+
     my_converted_list = []
 
     for my_index in range(0, len(my_lat)):
